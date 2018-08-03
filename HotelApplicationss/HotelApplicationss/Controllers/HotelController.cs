@@ -34,14 +34,36 @@ namespace HotelApplicationss.Controllers
         {
             return hotel;
         }
-        public  HttpResponseMessage PostHotels(Hotel h)//
+        public ApiResponse PostHotels(Hotel h)//
         {
-            ApiResponse ob =GetValueByid(h.Hotelid);
+
             c++;
+            Hotel existHotel = hotel.Find(p => p.Hotelid == c);
+            if (existHotel != null)
+            {
+                return new ApiResponse
+                {
+
+                    errorCode = 404,
+                    status = Status.Failure,
+
+                    errorMsg = "Hotel Exists",
+                };
+            }
             h.Hotelid = c;
             hotel.Add(h);
-            HttpResponseMessage response = Request.CreateResponse(HttpStatusCode.OK, hotel);
-            return response;
+
+            return new ApiResponse
+            {
+
+                errorCode = 200,
+                status = Status.Success,
+                hotel = h,
+                errorMsg = "Hotel Added Succesfully",
+
+            };
+
+
         }
         [HttpPut]
         public ApiResponse BookAFlight(int id, [FromBody]int rooms)
