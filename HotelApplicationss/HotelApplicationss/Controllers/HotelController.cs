@@ -37,7 +37,7 @@ namespace HotelApplicationss.Controllers
         public ApiResponse PostHotels(Hotel h)//
         {
 
-            c++;
+            c++;    
             Hotel existHotel = hotel.Find(p => p.Hotelid == c);
             if (existHotel != null)
             {
