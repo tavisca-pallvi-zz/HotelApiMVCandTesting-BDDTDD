@@ -12,7 +12,7 @@ namespace HotelApplicationss.Controllers
 
     public class HotelController : ApiController
     {
-        static int c = 0;
+        static int c = 3;
         static List<Hotel> hotel = new List<Hotel>()
         {
           new Hotel
@@ -30,9 +30,9 @@ namespace HotelApplicationss.Controllers
               Name="Taj",Hotelid=3,Address="Mumbai",Rooms=100,Airportcode="BOM"},
           };
 
-        public List<Hotel> GetHotels()
+        public ApiResponse GetHotels()
         {
-            return hotel;
+
         }
         public ApiResponse PostHotels(Hotel h)//
         {
@@ -41,6 +41,9 @@ namespace HotelApplicationss.Controllers
             Hotel existHotel = hotel.Find(p => p.Hotelid == c);
             if (existHotel != null)
             {
+                h.Hotelid = c;
+                hotel.Add(h);
+
                 return new ApiResponse
                 {
 
@@ -49,9 +52,9 @@ namespace HotelApplicationss.Controllers
 
                     errorMsg = "Hotel Exists",
                 };
+               
             }
-            h.Hotelid = c;
-            hotel.Add(h);
+
 
             return new ApiResponse
             {
@@ -62,17 +65,34 @@ namespace HotelApplicationss.Controllers
                 errorMsg = "Hotel Added Succesfully",
 
             };
-
-
         }
+
+
+       
         [HttpPut]
         public ApiResponse BookAFlight(int id, [FromBody]int rooms)
         {
 
             Hotel desiredHotel = null;
             desiredHotel = hotel.Find(x => x.Hotelid == id);
+            
             if (desiredHotel != null)
             {
+                if (rooms <= 0)
+                {
+
+                    return new ApiResponse()
+                    {
+
+                        errorCode = 200,
+                        status = Status.Success,
+                        hotel = desiredHotel,
+                        errorMsg = "Bad Request",
+                   
+                    };
+
+
+                }
                 if (desiredHotel.Rooms >= rooms)
                 {
                     desiredHotel.Rooms = desiredHotel.Rooms - rooms;
@@ -98,8 +118,9 @@ namespace HotelApplicationss.Controllers
 
             };
 
-                }
             }
+
+          }
 
             return new ApiResponse()
             {
@@ -141,8 +162,6 @@ namespace HotelApplicationss.Controllers
         {
             Hotel desiredHotel = null;
             HttpResponseMessage response=null;
-
-            response = Request.CreateResponse(HttpStatusCode.BadRequest, hotel);
           
             try
             {
